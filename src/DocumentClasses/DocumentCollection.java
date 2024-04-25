@@ -2,7 +2,6 @@ package DocumentClasses;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -10,7 +9,6 @@ import java.util.regex.Pattern;
 
 public class DocumentCollection implements Serializable {
     private HashMap<Integer, TextVector> documents;  // mapping of document indexes to their content text vector
-    private Set<String> words;
 
     /***
      * Constructor for the Document collection class. Takes a file as file to parse, and uses file to populate documents variable
@@ -19,6 +17,8 @@ public class DocumentCollection implements Serializable {
     public DocumentCollection(String filename) {
 
         try {
+            documents = new HashMap<>();
+
             // Step 1: Read in the document
             Path filePath = Path.of(filename);
             String docs = Files.readString(filePath);
@@ -40,17 +40,13 @@ public class DocumentCollection implements Serializable {
                 documents.put(idx++, new TextVector(words));
             }
         }
-        catch (NoSuchFileException e) {
-            e.printStackTrace();
-        }
         catch (IOException e) {
            e.printStackTrace();
         }
     }
 
     /***
-     *
-     * @param id
+     * @param id document id
      * @return the TextVector for the document with the ID that is given
      */
     public TextVector getDocumentById(int id) {
@@ -109,7 +105,7 @@ public class DocumentCollection implements Serializable {
      * @param word a word that may or may not be in the document
      * @return true if word is a noise word, false otherwise
      */
-    private boolean isNoiseWord(String word) {
+    public boolean isNoiseWord(String word) {
        return TextVector.noiseWordArray.contains(word);
     }
 }

@@ -3,7 +3,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class TextVector implements Serializable {
-    private HashMap<String, Integer> rawVector;  // mapping of words to their frequencies
+    private final HashMap<String, Integer> rawVector;  // mapping of words to their frequencies
     // a word must contain only letters, and must have two or more letters
     // assume anything that is not a letter is a word separator
     // convert all words to lowercase when storing here
@@ -58,7 +58,7 @@ public class TextVector implements Serializable {
 
     /***
      * Adds a word to the rawVector. If the word is not new, frequency is incremented by one
-     * @param word
+     * @param word word to add to a string
      */
     public void add(String word) {
         if (rawVector.containsKey(word)) {
@@ -70,11 +70,11 @@ public class TextVector implements Serializable {
 
         if (!noiseWordArray.contains(word)) {
            nonNoiseWords++;
-        }
 
-        if (rawVector.get(word) > maxFrequency) {
-            maxFrequency = rawVector.get(word);
-            maxWord = word;
+           if (rawVector.get(word) > maxFrequency) {
+               maxFrequency = rawVector.get(word);
+               maxWord = word;
+           }
         }
     }
 
@@ -101,6 +101,13 @@ public class TextVector implements Serializable {
      * @return the total number of non-noise words that are stored for the document
      */
     public int getTotalWordCount() {
+//        int wordCount = 0;
+//        for (var word : rawVector.keySet()) {
+//            if (!noiseWordArray.contains(word)) {
+//               wordCount += rawVector.get(word);
+//            }
+//        }
+//        return wordCount;
         return nonNoiseWords;
     }
 
@@ -108,6 +115,11 @@ public class TextVector implements Serializable {
      * @return the number of distinct words that are stored
      */
     public int getDistinctWordCount() {
+//        int distinctCount = 0;
+//        for (var freq : rawVector.entrySet()) {
+//           distinctCount += freq.getValue();
+//        }
+//        return distinctCount;
         return rawVector.size();
     }
 
