@@ -11,7 +11,7 @@ public class Lab1 {
 
     public static void main(String[] args) {
         // read in documents
-        DocumentCollection docs = new DocumentCollection(pathname);
+        DocumentCollection docs = new DocumentCollection(pathname, "document");
         int maxFreq = 0;
         int distinctWordCount = 0;
         int nonNoiseWordFreq = 0;

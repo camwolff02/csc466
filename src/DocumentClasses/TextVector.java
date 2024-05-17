@@ -1,8 +1,20 @@
 package DocumentClasses;
+
+import org.w3c.dom.Text;
+
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
 
-public class TextVector implements Serializable {
+class DocDistComparator implements Comparator<Map.Entry<Double, Integer>> {
+    @Override
+    public int compare (Map.Entry<Double, Integer> pair1, Map.Entry<Double, Integer> pair2) {
+        final int PRECISION = 6;  // number of decimal places to compare
+        return (int)(Math.pow(10, PRECISION)*(pair1.getKey() - pair2.getKey()));
+    }
+}
+
+public abstract class TextVector implements Serializable {
     private final HashMap<String, Integer> rawVector;  // mapping of words to their frequencies
     // a word must contain only letters, and must have two or more letters
     // assume anything that is not a letter is a word separator
@@ -30,9 +42,60 @@ public class TextVector implements Serializable {
             "which", "while", "who", "whom", "whose", "why", "with", "without",
             "would", "you", "your", "yours", "yes"));
 
-    /***
+    /**
+     * @return the normalized frequency for each word
+     */
+    public abstract Set<Map.Entry<String, Double>> getNormalizedVectorEntrySet();
+
+    /**
+     * @param dc will normalize the frequency of each word in dc using the TF-IDF formula
+     */
+    public abstract void normalize(DocumentCollection dc);
+
+    /**
+     * @param word to normalize frequency of
+     * @return the normalized frequency of word
+     */
+    public abstract double getNormalizedFrequency(String word);
+
+    /**
+     * @return the square root of the sum of the squares of the normalized frequencies
+     */
+    public double getL2Norm() {
+        double l2Sum = 0;
+        for (var word : rawVector.keySet()) {
+           l2Sum += Math.pow(getNormalizedFrequency(word), 2);
+        }
+        return Math.sqrt(l2Sum);
+    }
+
+    /**
+      * @param documents set of documents to compare to this vector
+      * @param distanceAlg distance metric to use when comparing closeness of 2 vectors
+     * @return the 20 closest documents to this vector
+     */
+    public ArrayList<Integer> findClosestDocuments(DocumentCollection documents, DocumentDistance distanceAlg) {
+        final int closestN = 20;
+
+        // priority queue matching document distances to their ids
+        PriorityQueue<Map.Entry<Double, Integer>> closestDocuments = new PriorityQueue<>(new DocDistComparator());
+
+        // for each document, add it to the queue with its
+        for (var document : documents.getEntrySet()) {
+            closestDocuments.add(new AbstractMap.SimpleEntry<>(distanceAlg.findDistance(this, document.getValue(), documents), document.getKey()));
+        }
+
+        // now that we have all the documents sorted, get the top n closest documents
+        var closestNDocuments = new ArrayList<Integer>();
+        for (int n = 0; n < closestN; n++) {
+            closestNDocuments.add(closestDocuments.poll().getValue());
+        }
+        return closestNDocuments;
+    }
+
+    /**
      * Constructs an empty instance of the TextVector class.
-      */
+     */
     public TextVector() {
         this.rawVector = new HashMap<>();
     }
@@ -46,6 +109,11 @@ public class TextVector implements Serializable {
         for (var word : words) {
             add(word);
         }
+    }
+
+    public TextVector(Stream<String> words) {
+       this.rawVector = new HashMap<>();
+       words.forEach(this::add);
     }
 
     /***

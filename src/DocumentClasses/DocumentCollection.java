@@ -6,15 +6,18 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class DocumentCollection implements Serializable {
     private HashMap<Integer, TextVector> documents;  // mapping of document indexes to their content text vector
 
     /***
      * Constructor for the Document collection class. Takes a file as file to parse, and uses file to populate documents variable
+     * @param type if type is "document", adds DocumentVector objects to Hashmap. Otherwise, adds QueryVector objects to hash map.
      * @param filename of document to parse
      */
-    public DocumentCollection(String filename) {
+    public DocumentCollection(String filename, String type) {
+        // TODO implement type
 
         try {
             documents = new HashMap<>();
@@ -24,7 +27,7 @@ public class DocumentCollection implements Serializable {
             String docs = Files.readString(filePath);
 
             // Step 2: Extract the data (the text after .W)
-            Pattern pattern = Pattern.compile("(?s)\\.W(.*?)\\.I");
+            Pattern pattern = Pattern.compile("(?s)\\.W(.+?)(\\.I|$)");
             Matcher matcher = pattern.matcher(docs);
 
             int idx = 0;
@@ -37,7 +40,17 @@ public class DocumentCollection implements Serializable {
                                     .toLowerCase()
                                     .split("[^a-zA-Z]+");
 
-                documents.put(idx++, new TextVector(words));
+                // don't add noise words
+                // don't add words of length < 2
+                Stream<String> wordStream = Arrays.stream(words).filter(this::isNotNoiseWord)
+                                                                .filter((String word) -> word.length() >= 2);
+
+                if (type.equalsIgnoreCase("document")) {
+                    documents.put(idx++, new DocumentVector(wordStream));
+                }
+                else {
+                    documents.put(idx++, new QueryVector(wordStream));
+                }
             }
         }
         catch (IOException e) {
@@ -51,6 +64,14 @@ public class DocumentCollection implements Serializable {
      */
     public TextVector getDocumentById(int id) {
        return documents.get(id);
+    }
+
+    /**
+     * Calls the normalize(dc) method of each document on this collection
+      * @param dc
+     */
+    public void normalize(DocumentCollection dc) {
+
     }
 
     /***
@@ -108,5 +129,6 @@ public class DocumentCollection implements Serializable {
     public boolean isNoiseWord(String word) {
        return TextVector.noiseWordArray.contains(word);
     }
+    public boolean isNotNoiseWord(String word) { return !isNoiseWord(word); }
 }
 
