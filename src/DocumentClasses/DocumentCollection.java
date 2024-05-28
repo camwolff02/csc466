@@ -71,7 +71,9 @@ public class DocumentCollection implements Serializable {
       * @param dc
      */
     public void normalize(DocumentCollection dc) {
-
+        for (TextVector document : dc.getDocuments()) {
+            document.normalize(dc);
+        }
     }
 
     /***

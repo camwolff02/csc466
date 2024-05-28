@@ -23,42 +23,46 @@ public abstract class TextVector implements Serializable {
     private int maxFrequency;
     private int nonNoiseWords;
 
-    public static  Set<String> noiseWordArray = new HashSet<>(Arrays.asList("a", "about", "above", "all", "along",
-            "also", "although", "am", "an", "and", "any", "are", "aren't", "as", "at",
-            "be", "because", "been", "but", "by", "can", "cannot", "could", "couldn't",
-            "did", "didn't", "do", "does", "doesn't", "e.g.", "either", "etc", "etc.",
-            "even", "ever", "enough", "for", "from", "further", "get", "gets", "got", "had", "have",
-            "hardly", "has", "hasn't", "having", "he", "hence", "her", "here",
-            "hereby", "herein", "hereof", "hereon", "hereto", "herewith", "him",
-            "his", "how", "however", "i", "i.e.", "if", "in", "into", "it", "it's", "its",
-            "me", "more", "most", "mr", "my", "near", "nor", "now", "no", "not", "or", "on", "of", "onto",
-            "other", "our", "out", "over", "really", "said", "same", "she",
-            "should", "shouldn't", "since", "so", "some", "such",
-            "than", "that", "the", "their", "them", "then", "there", "thereby",
-            "therefore", "therefrom", "therein", "thereof", "thereon", "thereto",
-            "therewith", "these", "they", "this", "those", "through", "thus", "to",
-            "too", "under", "until", "unto", "upon", "us", "very", "was", "wasn't",
-            "we", "were", "what", "when", "where", "whereby", "wherein", "whether",
-            "which", "while", "who", "whom", "whose", "why", "with", "without",
-            "would", "you", "your", "yours", "yes"));
+    public static final Set<String> noiseWordArray = new HashSet<>(Arrays.asList("a", "about", "above", "all", "along",
+        "also", "although", "am", "an", "and", "any", "are", "aren't", "as", "at",
+        "be", "because", "been", "but", "by", "can", "cannot", "could", "couldn't",
+        "did", "didn't", "do", "does", "doesn't", "e.g.", "either", "etc", "etc.",
+        "even", "ever", "enough", "for", "from", "further", "get", "gets", "got", "had", "have",
+        "hardly", "has", "hasn't", "having", "he", "hence", "her", "here",
+        "hereby", "herein", "hereof", "hereon", "hereto", "herewith", "him",
+        "his", "how", "however", "i", "i.e.", "if", "in", "into", "it", "it's", "its",
+        "me", "more", "most", "mr", "my", "near", "nor", "now", "no", "not", "or", "on", "of", "onto",
+        "other", "our", "out", "over", "really", "said", "same", "she",
+        "should", "shouldn't", "since", "so", "some", "such",
+        "than", "that", "the", "their", "them", "then", "there", "thereby",
+        "therefore", "therefrom", "therein", "thereof", "thereon", "thereto",
+        "therewith", "these", "they", "this", "those", "through", "thus", "to",
+        "too", "under", "until", "unto", "upon", "us", "very", "was", "wasn't",
+        "we", "were", "what", "when", "where", "whereby", "wherein", "whether",
+        "which", "while", "who", "whom", "whose", "why", "with", "without",
+        "would", "you", "your", "yours", "yes"));
 
     /**
      * @return the normalized frequency for each word
+     * Override in child class
      */
     public abstract Set<Map.Entry<String, Double>> getNormalizedVectorEntrySet();
 
     /**
      * @param dc will normalize the frequency of each word in dc using the TF-IDF formula
+     * Override in child class
      */
     public abstract void normalize(DocumentCollection dc);
 
     /**
      * @param word to normalize frequency of
      * @return the normalized frequency of word
+     * Override in child class
      */
     public abstract double getNormalizedFrequency(String word);
 
     /**
+     * Calculates and returns the magnitude of this vector
      * @return the square root of the sum of the squares of the normalized frequencies
      */
     public double getL2Norm() {

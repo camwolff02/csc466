@@ -7,11 +7,11 @@ import java.io.ObjectOutputStream;
 
 
 public class Lab1 {
-    public static String pathname = "src/files/documents.txt";
+    public static final String PATH = "src/files/" ;
 
     public static void main(String[] args) {
         // read in documents
-        DocumentCollection docs = new DocumentCollection(pathname, "document");
+        DocumentCollection docs = new DocumentCollection(PATH + "documents.txt", "document");
         int maxFreq = 0;
         int distinctWordCount = 0;
         int nonNoiseWordFreq = 0;
@@ -43,7 +43,7 @@ public class Lab1 {
         System.out.println("Total word count = " + nonNoiseWordFreq);
 
         // ... serialize documents to file
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("src/files/docvector"))) {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(PATH + "docvector"))) {
             os.writeObject(docs);
         } catch (Exception e) {
             e.printStackTrace();
