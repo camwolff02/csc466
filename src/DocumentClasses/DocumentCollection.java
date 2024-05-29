@@ -17,8 +17,6 @@ public class DocumentCollection implements Serializable {
      * @param filename of document to parse
      */
     public DocumentCollection(String filename, String type) {
-        // TODO implement type
-
         try {
             documents = new HashMap<>();
 

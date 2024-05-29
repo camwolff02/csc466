@@ -26,12 +26,12 @@ public class Graph {
     // TODO FIX: Broken for directed graphs?
     public void add(int fromNode, int toNode) {
         // if we've never seen a node before, initialize it
-        if (!nodeSet.contains(fromNode)) {
+        if (!adjacencyList.containsKey(fromNode)) {
             adjacencyList.put(fromNode, new HashSet<Integer>());
             numOutgoingLinksForNode.put(fromNode, 0);
         }
 
-        if (!directed && !nodeSet.contains(toNode)) {
+        if (!directed && !adjacencyList.containsKey(toNode)) {
             adjacencyList.put(toNode, new HashSet<Integer>());
             numOutgoingLinksForNode.put(toNode, 0);
         }
