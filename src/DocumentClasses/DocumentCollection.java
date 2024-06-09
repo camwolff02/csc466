@@ -10,6 +10,25 @@ import java.util.stream.Stream;
 
 public class DocumentCollection implements Serializable {
     private HashMap<Integer, TextVector> documents;  // mapping of document indexes to their content text vector
+    
+    public static final Set<String> noiseWordArray = new HashSet<>(Arrays.asList("a", "about", "above", "all", "along",
+            "also", "although", "am", "an", "and", "any", "are", "aren't", "as", "at",
+            "be", "because", "been", "but", "by", "can", "cannot", "could", "couldn't",
+            "did", "didn't", "do", "does", "doesn't", "e.g.", "either", "etc", "etc.",
+            "even", "ever", "enough", "for", "from", "further", "get", "gets", "got", "had", "have",
+            "hardly", "has", "hasn't", "having", "he", "hence", "her", "here",
+            "hereby", "herein", "hereof", "hereon", "hereto", "herewith", "him",
+            "his", "how", "however", "i", "i.e.", "if", "in", "into", "it", "it's", "its",
+            "me", "more", "most", "mr", "my", "near", "nor", "now", "no", "not", "or", "on", "of", "onto",
+            "other", "our", "out", "over", "really", "said", "same", "she",
+            "should", "shouldn't", "since", "so", "some", "such",
+            "than", "that", "the", "their", "them", "then", "there", "thereby",
+            "therefore", "therefrom", "therein", "thereof", "thereon", "thereto",
+            "therewith", "these", "they", "this", "those", "through", "thus", "to",
+            "too", "under", "until", "unto", "upon", "us", "very", "was", "wasn't",
+            "we", "were", "what", "when", "where", "whereby", "wherein", "whether",
+            "which", "while", "who", "whom", "whose", "why", "with", "without",
+            "would", "you", "your", "yours", "yes"));
 
     /***
      * Constructor for the Document collection class. Takes a file as file to parse, and uses file to populate documents variable
@@ -44,10 +63,10 @@ public class DocumentCollection implements Serializable {
                                                                 .filter((String word) -> word.length() >= 2);
 
                 if (type.equalsIgnoreCase("document")) {
-                    documents.put(idx++, new DocumentVector(wordStream));
+                    documents.put(++idx, new DocumentVector(wordStream));
                 }
                 else {
-                    documents.put(idx++, new QueryVector(wordStream));
+                    documents.put(++idx, new QueryVector(wordStream));
                 }
             }
         }
@@ -66,10 +85,10 @@ public class DocumentCollection implements Serializable {
 
     /**
      * Calls the normalize(dc) method of each document on this collection
-      * @param dc
+      * @param dc document colletion to normalize relative to
      */
     public void normalize(DocumentCollection dc) {
-        for (TextVector document : dc.getDocuments()) {
+        for (TextVector document : getDocuments()) {
             document.normalize(dc);
         }
     }
@@ -127,7 +146,7 @@ public class DocumentCollection implements Serializable {
      * @return true if word is a noise word, false otherwise
      */
     public boolean isNoiseWord(String word) {
-       return TextVector.noiseWordArray.contains(word);
+       return noiseWordArray.contains(word);
     }
     public boolean isNotNoiseWord(String word) { return !isNoiseWord(word); }
 }

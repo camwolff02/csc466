@@ -1,62 +1,73 @@
 package Graph;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Scanner;
 
 import static java.lang.Integer.parseInt;
 
 public class Graph {
     // containers holding the set of nodes
-    private final boolean directed;
     private HashSet<Integer> nodeSet;
-    private HashMap<Integer, HashSet<Integer>> adjacencyList;
-    private HashMap<Integer, Integer> numOutgoingLinksForNode;
+    private HashMap<Integer, HashSet<Integer>> incomingLinks;  // Adjacency list of incoming edges
+    private HashMap<Integer, Integer> numOutgoingLinks;  // stores number of outgoing edges
 
-    public Graph(boolean directed) {
-        this.directed = directed;
+    public Graph() {
         this.nodeSet = new HashSet<>();
-        this.adjacencyList = new HashMap<>();
-        this.numOutgoingLinksForNode = new HashMap<>();
+        this.incomingLinks = new HashMap<>();
+        this.numOutgoingLinks = new HashMap<>();
     }
 
-    // TODO FIX: Broken for directed graphs?
-    public void add(int fromNode, int toNode) {
+    public HashSet<Integer> getNodeSet() {
+        return this.nodeSet;
+    }
+
+    public int getSize() {
+        return this.nodeSet.size();
+    }
+
+    public int getNumIncomingLinks(int node) {
+        if (this.incomingLinks.containsKey(node)) {
+            return this.incomingLinks.get(node).size();
+        }
+        return 0;
+    }
+
+    public HashSet<Integer> getIncomingLinks(int node) {
+        return this.incomingLinks.get(node);
+    }
+
+    public int getNumOutgoingLinks(int node) {
+       return numOutgoingLinks.get(node);
+    }
+
+    // add an edge from startNode to endNode
+    public void add(int startNode, int endNode) {
         // if we've never seen a node before, initialize it
-        if (!adjacencyList.containsKey(fromNode)) {
-            adjacencyList.put(fromNode, new HashSet<Integer>());
-            numOutgoingLinksForNode.put(fromNode, 0);
+        if (!incomingLinks.containsKey(endNode)) {
+            incomingLinks.put(endNode, new HashSet<Integer>());
         }
 
-        if (!directed && !adjacencyList.containsKey(toNode)) {
-            adjacencyList.put(toNode, new HashSet<Integer>());
-            numOutgoingLinksForNode.put(toNode, 0);
+        if (!numOutgoingLinks.containsKey(startNode)) {
+            numOutgoingLinks.put(startNode, 0);
+        }
+
+        // update the adjacency list
+        if (!incomingLinks.get(endNode).contains(startNode)) {
+            incomingLinks.get(endNode).add(startNode);
+            numOutgoingLinks.put(startNode, numOutgoingLinks.get(startNode)+1);
         }
 
         // mark both nodes as seen
-        nodeSet.add(fromNode);
-        nodeSet.add(toNode);
+        nodeSet.add(startNode);
+        nodeSet.add(endNode);
 
-        // update the adjacency list
-        if (!adjacencyList.get(fromNode).contains(toNode)) {
-            adjacencyList.get(fromNode).add(toNode);
-            numOutgoingLinksForNode.put(fromNode, numOutgoingLinksForNode.get(fromNode)+1);
-        }
-
-        if (!directed && !adjacencyList.get(toNode).contains(fromNode)) {
-            adjacencyList.get(toNode).add(fromNode);
-            numOutgoingLinksForNode.put(toNode, numOutgoingLinksForNode.get(toNode)+1);
-        }
     }
 
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (var entry : adjacencyList.entrySet()) {
-            str.append(entry.getKey()).append(" -> {");
+        for (var entry : incomingLinks.entrySet()) {
+            str.append(entry.getKey()).append(" <- {");
             for (int num : entry.getValue()) {
                 str.append(num).append(", ");
             }

@@ -17,13 +17,12 @@ public class Lab2 {
     public static DocumentCollection queries;
 
     public static void main(String[] args) {
-        try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(new File(PATH + "docvector")))) {
+        try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(PATH + "docvector"))) {
             // load data from the binary file
             documents = (DocumentCollection)stream.readObject();
 
             // initialize the queries variable
             queries = new DocumentCollection(PATH + "queries.txt", "query");
-
 
             // call normalize() on documents and queries
             documents.normalize(documents);
@@ -32,8 +31,10 @@ public class Lab2 {
             // compute the top 20 documents for each query using the TF-IDF algorithm
             // and cosine similarity
             HashMap<Integer, ArrayList<Integer>> queryNumToTop20 = new HashMap<>();
+            var dist = new CosineDistance();
+
             for (var queryEntry : queries.getEntrySet()) {
-               queryNumToTop20.put(queryEntry.getKey(), queryEntry.getValue().findClosestDocuments(documents, new CosineDistance()));
+               queryNumToTop20.put(queryEntry.getKey(), queryEntry.getValue().findClosestDocuments(documents, dist, 20));
             }
 
             // print the 20 most relevant documents for each query
