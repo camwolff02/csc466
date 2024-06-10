@@ -2,9 +2,7 @@ package labs;
 
 import DocumentClasses.CosineDistance;
 import DocumentClasses.DocumentCollection;
-import DocumentClasses.TextVector;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;

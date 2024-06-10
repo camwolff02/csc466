@@ -28,9 +28,14 @@ public class Lab4 {
 
             // Run page rank and get top 20
             PageRank pageRank = new PageRank(graph);
-            pageRank.compute();
+            int iterations = pageRank.compute();
+            System.out.println("Iterations: " + iterations + "\n");
 
-            System.out.println("Generated:");
+            for (double value : pageRank.getNHighestRanks(20)) {
+                System.out.println(value);
+            }
+
+            System.out.println("\nGenerated:");
             ArrayList<Integer> mostImporant = pageRank.getNMostImportantNodes(20);
             mostImporant.sort(Integer::compareTo);
             printList(mostImporant);

@@ -44,7 +44,7 @@ public class Graph {
     public void add(int startNode, int endNode) {
         // if we've never seen a node before, initialize it
         if (!incomingLinks.containsKey(endNode)) {
-            incomingLinks.put(endNode, new HashSet<Integer>());
+            incomingLinks.put(endNode, new HashSet<>());
         }
 
         if (!numOutgoingLinks.containsKey(startNode)) {
