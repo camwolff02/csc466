@@ -4,10 +4,7 @@ import AssociationRules.ItemSet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 public class Lab5 {
     public static final String PATH = "src/files/";
@@ -21,19 +18,17 @@ public class Lab5 {
     public static void main(String[] args) {
         process(PATH + "shopping_data.txt");
 
-        for (int i = 0; i < transactions.size(); i++) {
-            //System.out.println((i+1) + "=" + transactions.get(i));
-        }
-
         // Implementation of Apriori Algorithm
         findFrequentSingleItemSets();
-        for (int k = 2; findFrequentItemSets(k); k++) {}
+        System.out.println(1 + "=" + frequentItemSets.get(1));
+        for (int k = 2; findFrequentItemSets(k); k++) {
+            System.out.println(k + "=" + frequentItemSets.get(k));
+        }
     }
 
     // finds all k-itemsets, returns false if no itemsets were found (precondition k >= 2)
     public static boolean findFrequentItemSets(int k) {
         if (k < 2) return false;
-
         frequentItemSets.put(k, new ArrayList<>());
 
         for (ItemSet candidate : candidateGen(k-1)) {
@@ -47,7 +42,7 @@ public class Lab5 {
 
     public static ArrayList<ItemSet> candidateGen(int k) {
         var candidates = new ArrayList<ItemSet>();
-        var Fprevious = frequentItemSets.get(k-1);
+        var Fprevious = frequentItemSets.get(k);
 
         // join step
         for (ItemSet f1 : Fprevious) {
@@ -56,25 +51,32 @@ public class Lab5 {
                 int f2Last = f2.getSortedItems().get(f2.getSize()-1);
                 if (f1Last < f2Last) {
                     ItemSet c = new ItemSet();
+                    // join f1 and f2
                     for (int i = 0; i < f1.getSize()-1; i++) {
                         c.addItem(f1.getSortedItems().get(i));
                     }
                     c.addItem(f1Last);
                     c.addItem(f2Last);
 
-                    // prune step
-                    for (int subsetSize = k-1; subsetSize >= 1; subsetSize--) {
-
+                    boolean included = false;
+                    for (ItemSet candidate : candidates) {
+                        if (candidate.equals(c)) included = true;
                     }
+                    if (!included) candidates.add(c);
 
-                    // if it passes both
-                    candidates.add(c);
+                    // prune step
+                    for (int subsetSize = k; subsetSize >= 1; subsetSize--) {
+                        // for each subset of this size
+                        for (var permutation : permutations(c.getItemSet())) {
+                            ItemSet subset = new ItemSet(permutation);
+                            if (!Fprevious.contains(subset) && subset.getSize() < c.getSize()) {
+                                candidates.remove(c); // prune c
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        // prune step
-
 
         return candidates;
     }
@@ -97,13 +99,9 @@ public class Lab5 {
     public static boolean isFrequent(ItemSet itemSet) {
         int supportingTransactions = 0;
         for (ItemSet transaction : transactions) {
-            boolean supports = true;
-            for (int item : itemSet.getItemSet()) {
-                if (!transaction.containsItem(item)) {
-                    supports = false;
-                }
+            if (transaction.containsSet(itemSet)) {
+                supportingTransactions++;
             }
-            if (supports) supportingTransactions++;
         }
         return supportingTransactions / (double)transactions.size() > MIN_SUPPORT;
     }
@@ -130,5 +128,26 @@ public class Lab5 {
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Collection<List<Integer>> permutations(Collection<Integer> input) {
+        Collection<List<Integer>> output = new ArrayList<List<Integer>>();
+        if (input.isEmpty()) {
+            output.add(new ArrayList<Integer>());
+            return output;
+        }
+        List<Integer> list = new ArrayList<Integer>(input);
+        Integer head = list.get(0);
+        List<Integer> rest = list.subList(1, list.size());
+        for (List<Integer> permutations : permutations(rest)) {
+            List<List<Integer>> subLists = new ArrayList<List<Integer>>();
+            for (int i = 0; i <= permutations.size(); i++) {
+                List<Integer> subList = new ArrayList<Integer>(permutations);
+                subList.add(i, head);
+                subLists.add(subList);
+            }
+            output.addAll(subLists);
+        }
+        return output;
     }
 }

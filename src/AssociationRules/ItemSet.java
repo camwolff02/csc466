@@ -1,7 +1,9 @@
 package AssociationRules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class ItemSet {
     private final ArrayList<Integer> items;
@@ -14,6 +16,13 @@ public class ItemSet {
         sorted = false;
     }
 
+    public ItemSet(Collection<Integer> items) {
+        this();
+        for (int item : items) {
+            addItem(item);
+        }
+    }
+
     public void addItem(int item) {
         items.add(item);
         itemSet.add(item);
@@ -24,6 +33,15 @@ public class ItemSet {
         return itemSet.contains(item);
     }
 
+    public boolean containsSet(ItemSet itemSet) {
+        for (int item : itemSet.items) {
+            if (!containsItem(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public HashSet<Integer> getItemSet() {
         return itemSet;
     }
@@ -31,6 +49,14 @@ public class ItemSet {
     public ArrayList<Integer> getSortedItems() {
         checkSort();
         return items;
+    }
+
+    public boolean equals(ItemSet itemSet) {
+        if (itemSet.getSize() != getSize()) return false;
+        for (int item : itemSet.items) {
+            if (!containsItem(item)) return false;
+        }
+        return true;
     }
 
     public int getSize() {
@@ -59,5 +85,4 @@ public class ItemSet {
             sorted = true;
         }
     }
-
 }
