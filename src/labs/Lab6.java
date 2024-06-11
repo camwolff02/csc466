@@ -21,12 +21,6 @@ public class Lab6 {
         // NEW generating rules
         generateRules();
 
-//        for (var entry : frequentItemSets.entrySet()) {
-//            for (var set : entry.getValue()) {
-//                System.out.println(set);
-//            }
-//        }
-
         for (var rule : rules) {
             System.out.println(rule);
         }
@@ -45,7 +39,6 @@ public class Lab6 {
     // takes a frequent itemset and generates all association rules that can be extracted
     public static ArrayList<Rule> split(ItemSet itemSet) {
         ArrayList<Rule> rules = new ArrayList<>();
-//        ArrayList<Rule> previousLayer = new ArrayList<>();
         if (itemSet.getSize() < 2) return rules;
 
         // generate starting itemsets
@@ -62,35 +55,10 @@ public class Lab6 {
 
             if (isMinConfidenceMet(rule)) {
                 rules.add(rule);
-//                previousLayer.add(rule);
             }
         }
 
         return rules;
-
-        /*
-
-        // recursively generate proceeding itemsets
-        ArrayList<Rule> newLayer;
-        do {
-            newLayer = new ArrayList<>();
-            // generate new rules by joining all previous rules
-            for (Rule ruleA : previousLayer) {
-                for (Rule ruleB : previousLayer) {
-                    Rule joinedRule = Rule.join(ruleA, ruleB);
-                    if (joinedRule != null && isMinConfidenceMet(joinedRule)) {
-//                        System.out.println(ruleA + " + " + ruleB + " = " + joinedRule);
-                        newLayer.add(joinedRule);
-                        rules.add(joinedRule);
-                    }
-                }
-            }
-            previousLayer = newLayer;
-        } while (!newLayer.isEmpty());
-
-        return rules;
-
-         */
     }
 
     // checks if rule meets the minimum confidence

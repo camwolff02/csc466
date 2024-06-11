@@ -87,6 +87,7 @@ public class Matrix {
             double probability = documentsInClass / (double)rows.size();
             denominator -= probability*log2(probability);
         }
+        if (denominator == 0) return 0;
         return findGain(attribute, rows) / denominator;  // TODO implement
     }
 
@@ -105,8 +106,27 @@ public class Matrix {
    // the value for the attribute and an ArrayList of rows that have this value
    public HashMap<Integer, ArrayList<Integer>> split(int attribute, ArrayList<Integer> rows) {
         var splitSet = new HashMap<Integer, ArrayList<Integer>>();
-        // TODO implement
+        for (int class_ : findDifferentValues(attribute, rows)) {
+            splitSet.put(class_, findRows(attribute, class_, rows));
+        }
+
         return splitSet;
    }
 
+   @Override
+   public String toString() {
+        StringBuilder str = new StringBuilder();
+        for (var row : data) {
+            for (int item : row) {
+                str.append(item);
+                str.append(" ");
+            }
+            str.append("\n");
+        }
+        return str.toString();
+   }
+
+   public ArrayList<ArrayList<Integer>> getData() {
+        return this.data;
+   }
 }
