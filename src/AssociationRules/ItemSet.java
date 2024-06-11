@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemSet {
-    private final ArrayList<Integer> items;
+    private ArrayList<Integer> items;
     private final HashSet<Integer> itemSet;
     boolean sorted;
 
@@ -24,9 +25,11 @@ public class ItemSet {
     }
 
     public void addItem(int item) {
-        items.add(item);
-        itemSet.add(item);
-        sorted = false;
+        if (!itemSet.contains(item)) {
+            items.add(item);
+            itemSet.add(item);
+            sorted = false;
+        }
     }
 
     public boolean containsItem(int item) {
@@ -82,7 +85,7 @@ public class ItemSet {
     public static ItemSet union(ItemSet itemSetA, ItemSet itemSetB) {
         var union = new ItemSet(itemSetA.getItemSet());
         union.itemSet.addAll(itemSetB.getItemSet());
-        union.items.addAll(union.getItemSet());
+        union.items = new ArrayList<>(union.getItemSet());
         return union;
     }
 
@@ -90,8 +93,18 @@ public class ItemSet {
     public static ItemSet intersection(ItemSet itemSetA, ItemSet itemSetB) {
         var intersect = new ItemSet(itemSetA.getItemSet());
         intersect.itemSet.retainAll(itemSetB.getItemSet());
-        intersect.items.addAll(intersect.getItemSet());
+        intersect.items = new ArrayList<>(intersect.getItemSet());
         return intersect;
+    }
+
+    public static ItemSet difference(ItemSet itemSetA, ItemSet itemSetB) {
+        var diff = new ItemSet();
+        for (int item : itemSetA.items) {
+            if (!itemSetB.containsItem(item)) {
+                diff.addItem(item);
+            }
+        }
+        return diff;
     }
 
     private void checkSort() {

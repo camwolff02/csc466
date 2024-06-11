@@ -1,6 +1,8 @@
 package AssociationRules;
 
 
+import java.util.AbstractMap;
+
 public class Rule {
     private ItemSet left, right;
 
@@ -34,20 +36,26 @@ public class Rule {
         return right;
     }
 
+    /*  legacy code :(
     public static Rule join(Rule ruleA, Rule ruleB) {
         ItemSet intersection = ItemSet.intersection(ruleA.left, ruleB.left);
         if (intersection.getSize() == ruleA.left.getSize()-1) {
+            var rule = new Rule(intersection, ItemSet.union(ruleA.right, ruleB.right));
+            for (var itemset : ItemSet.difference(ruleA.left, ruleB.left).getItemSet()) {
+                rule.addRightItem(itemset);
+            }
+            for (var itemset : ItemSet.difference(ruleB.left, ruleA.left).getItemSet()) {
+                rule.addRightItem(itemset);
+            }
+
             return new Rule(intersection, ItemSet.union(ruleA.right, ruleB.right));
         }
         return null;
     }
+     */
 
     @Override
     public String toString() {
-        var str = new StringBuilder();
-        str.append(left);
-        str.append("->");
-        str.append(right);
-        return str.toString();
+        return left + "->" + right;
     }
 }
