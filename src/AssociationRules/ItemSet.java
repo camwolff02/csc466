@@ -79,6 +79,21 @@ public class ItemSet {
         return str.toString();
     }
 
+    public static ItemSet union(ItemSet itemSetA, ItemSet itemSetB) {
+        var union = new ItemSet(itemSetA.getItemSet());
+        union.itemSet.addAll(itemSetB.getItemSet());
+        union.items.addAll(union.getItemSet());
+        return union;
+    }
+
+
+    public static ItemSet intersection(ItemSet itemSetA, ItemSet itemSetB) {
+        var intersect = new ItemSet(itemSetA.getItemSet());
+        intersect.itemSet.retainAll(itemSetB.getItemSet());
+        intersect.items.addAll(intersect.getItemSet());
+        return intersect;
+    }
+
     private void checkSort() {
         if (!sorted) {
             items.sort(Integer::compareTo);
