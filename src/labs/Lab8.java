@@ -4,6 +4,8 @@ import SupervisedLearning.Matrix;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import static labs.Lab7.process;
@@ -29,5 +31,4 @@ public class Lab8 {
 
         return values;
     }
-
 }

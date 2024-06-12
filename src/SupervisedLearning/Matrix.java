@@ -24,13 +24,13 @@ public class Matrix {
     // Examines only the specified rows of the array. It returns the number of rows in which the element at
     // the position attribute (a number between 0 and 4) is equal to value
     private int findFrequency(int attribute, int value, ArrayList<Integer> rows) {
-        int numRows = 0;
+        int frequency = 0;
         for (int row : rows) {
             if (data.get(row).get(attribute) == value) {
-                numRows++;
+                frequency++;
             }
         }
-        return numRows;
+        return frequency;
     }
 
     // Examines only the specified rows of the array. Returns a hashSet of the different values for the specified attribute
@@ -72,9 +72,11 @@ public class Matrix {
     // finds the entropy of the dataset that consists of the specified rows after it is partitioned on the attribute
     private double findEntropy(int attribute, ArrayList<Integer> rows) {
         double entropy = 0;
-        for (int attributeClass : findDifferentValues(attribute, rows)) {  // for each type of this attribute
-            ArrayList<Integer> attributeRows = findRows(attribute, attributeClass, rows);  // try splitting on this attribute
-            entropy += findEntropy(attributeRows);  // and find the entropy of splitting on this attribute
+        for (int value : findDifferentValues(attribute, rows)) {  // for each type of this attribute
+            ArrayList<Integer> partition = findRows(attribute, value, rows);  // try splitting on this attribute
+            double partitionEntropy = findEntropy(partition);
+            double weight = partition.size() / (double) rows.size();
+            entropy += weight * partitionEntropy;  // and find the entropy of splitting on this attribute
         }
         return entropy;
     }
@@ -136,7 +138,7 @@ public class Matrix {
         return this.data;
    }
 
-   // **** LAB 8 ****
+   // **** LAB 8 ***************************************************************
     // returns the index of the category attribute
     public int getCategoryAttribute() {
         return categoryAttr;
@@ -172,14 +174,11 @@ public class Matrix {
      * @return the probability that the row belongs to the category
      */
     public double findProb(ArrayList<Integer> datapoint, int category) {
-        double probOfCategory = findFrequency(categoryAttr, category, findAllRows());  // Pr(y=y1)
+        double probOfCategory = findFrequency(categoryAttr, category, findAllRows()) / (double)data.size();  // Pr(y=y1)
         double condProbOfDatapoints = getCondProbOfValues(datapoint, category);  // Pr(x1=a1|y=y1) * ... * Pr(xn=an|y=y1)
-//        double z = getProbOfDatapoint(datapoint);  // z = Pr(x1=a1,...,xn=an)
 
-        System.out.println("\n" + probOfCategory + " * " + condProbOfDatapoints);
         return probOfCategory * condProbOfDatapoints;
     }
-
 
     // Pr(x1=a1|y=y1) * ... * Pr(xn=an|y=y1)
     // uses laplace smoothening with lambda = 1/n
@@ -208,29 +207,4 @@ public class Matrix {
         }
         return condProbOfDatapoints;
     }
-
-
-
-    // TODO remove, depricated
-    // z = Pr(x1=a1,...,xn=an)
-    /*
-    private double getProbOfDatapoint(ArrayList<Integer> datapoint) {
-        double z = 0;
-        for (ArrayList<Integer> row : data) {
-            boolean equal = true;
-            for (int attr = 0; attr < datapoint.size(); attr++) {
-                if (!Objects.equals(row.get(attr), datapoint.get(attr))) {
-                    equal = false;
-                    break;
-                }
-            }
-            if (equal) {
-                z++;
-            }
-        }
-        z /= data.size();
-        return z;
-    }
-     */
-
 }

@@ -37,43 +37,39 @@ public class Lab7 {
 
     /**
      * recursive method that prints the decision tree
-     * @param data the data
+     * @param matrix the data
      * @param attributes the set of attributes that have not been used so far in this branch of the tree
      * @param rows the set of rows to examine
      * @param level the current level (initially 0, use to determine how many tabs to print)
      * @param currentIGR the information gain ratio from the last iteration (crates terminating condition)
      */
-    public static void printDecisionTree(Matrix data, ArrayList<Integer> attributes, ArrayList<Integer> rows, int level, double currentIGR) {
-        int maxAttribute = 0;
-        double maxIGR = -1;
+    public static void printDecisionTree(Matrix matrix, ArrayList<Integer> attributes, ArrayList<Integer> rows, int level, double currentIGR){
+        int bestAttribute = -1;
+        double bestIGR = -1;
 
-        // first, find the attribute which has the best value to split on
-        for (int attribute : attributes) {
-            double newIGR = data.computeIGR(attribute, rows);
-            if (newIGR > maxIGR) {
-                maxIGR = newIGR;
-                maxAttribute = attribute;
+        for (Integer attribute : attributes){
+            double igr = matrix.computeIGR(attribute, rows);
+            if (igr > bestIGR){
+                bestIGR = igr;
+                bestAttribute = attribute;
             }
         }
 
-        HashMap<Integer, ArrayList<Integer>> dataSplitOnAttr = data.split(maxAttribute, rows);
-        if (dataSplitOnAttr.size() == 1 || (Math.abs(maxIGR - currentIGR) <= MIN_IGR)) {  // if splitting on this value creates only 1 attribute set
-            // finish recursing and print leaf
+        if (bestAttribute == -1 || currentIGR < MIN_IGR) {
             for (int i = 0; i < level; i++) System.out.print("\t");
-            System.out.println("value = " + data.findMostCommonValue(rows));
+            System.out.println("value = " + matrix.findMostCommonValue(rows));
         }
-        else {  // otherwise if the difference between the curent and new IGR is less than the min IGR, recurse on subsets
-            for (var attributeSubset : dataSplitOnAttr.entrySet()) {
-                final int finalMaxAttribute = maxAttribute;
-                ArrayList<Integer> newAttributes = attributes.stream()
-                        .filter(attr -> attr != finalMaxAttribute)
-                        .collect(Collectors.toCollection(ArrayList::new));
+        else {
+            HashMap<Integer, ArrayList<Integer>> splits = matrix.split(bestAttribute, rows);
 
-                // TODO should this be outside if else statement? I don't think so but feels wrong
+            var partitionAttributes = new ArrayList<>(attributes);
+            partitionAttributes.remove(Integer.valueOf(bestAttribute));
+
+            for (Map.Entry<Integer, ArrayList<Integer>> entry : splits.entrySet()) {
                 for (int i = 0; i < level; i++) System.out.print("\t");
-                System.out.println("When attribute " + (maxAttribute+1) + " has value " + attributeSubset.getKey());
+                System.out.println("When attribute " + (bestAttribute+1) + " has value " + entry.getKey());
 
-                printDecisionTree(data, newAttributes, attributeSubset.getValue(), level+1, maxIGR);
+                printDecisionTree(matrix, partitionAttributes, entry.getValue(), level + 1, bestIGR);
             }
         }
     }
