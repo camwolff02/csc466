@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Lab7 {
     public static final String PATH = "src/files/";
@@ -58,25 +57,23 @@ public class Lab7 {
         }
 
         HashMap<Integer, ArrayList<Integer>> dataSplitOnAttr = data.split(maxAttribute, rows);
-        if (dataSplitOnAttr.size() == 1) {  // if splitting on this value creates only 1 attribute set
+        if (dataSplitOnAttr.size() == 1 || (Math.abs(maxIGR - currentIGR) <= MIN_IGR)) {  // if splitting on this value creates only 1 attribute set
             // finish recursing and print leaf
             for (int i = 0; i < level; i++) System.out.print("\t");
             System.out.println("value = " + data.findMostCommonValue(rows));
         }
-        else if (Math.abs(maxIGR - currentIGR) > MIN_IGR){  // otherwise if the difference between the curent and new IGR is less than the min IGR, recurse on subsets
-            for (var attibuteSubset : dataSplitOnAttr.entrySet()) {
-                int attributeValue = attibuteSubset.getKey();
-
+        else {  // otherwise if the difference between the curent and new IGR is less than the min IGR, recurse on subsets
+            for (var attributeSubset : dataSplitOnAttr.entrySet()) {
                 final int finalMaxAttribute = maxAttribute;
                 ArrayList<Integer> newAttributes = attributes.stream()
                         .filter(attr -> attr != finalMaxAttribute)
                         .collect(Collectors.toCollection(ArrayList::new));
+
                 // TODO should this be outside if else statement? I don't think so but feels wrong
                 for (int i = 0; i < level; i++) System.out.print("\t");
-                System.out.println("When attribute " + maxAttribute + "has value" + attributeValue);
+                System.out.println("When attribute " + (maxAttribute+1) + " has value " + attributeSubset.getKey());
 
-                // TODO change currentIGR
-                printDecisionTree(data, newAttributes, attibuteSubset.getValue(), level+1, maxIGR);
+                printDecisionTree(data, newAttributes, attributeSubset.getValue(), level+1, maxIGR);
             }
         }
     }
@@ -87,8 +84,7 @@ public class Lab7 {
      */
     public static void printDecisionTree(ArrayList<ArrayList<Integer>> data) {
         var matrix = new Matrix(data);
-        var attributes = new ArrayList<Integer>(List.of(0, 1, 2, 3));  // we want all attributes except prediction column
-        var rows = IntStream.range(0, data.size()).boxed().collect(Collectors.toCollection(ArrayList::new));
-        printDecisionTree(matrix, attributes, rows, 0, INITIAL_IGR);
+        var attributes = new ArrayList<>(List.of(0, 1, 2, 3));  // we want all attributes except prediction column
+        printDecisionTree(matrix, attributes, matrix.findAllRows(), 0, INITIAL_IGR);
     }
 }
